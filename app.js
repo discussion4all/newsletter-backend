@@ -16,7 +16,9 @@ const Newsletter = require("./models/newsletter");
 const Payment = require("./models/payment");
 
 const PORT = process.env.PORT || 9000;
-const BASE_URL = "http://ec2-34-224-95-146.compute-1.amazonaws.com:9000/";
+const PROD_URL = "http://ec2-34-224-95-146.compute-1.amazonaws.com:9000/";
+const DEV_URL = "http://localhost:9000";
+const BASE_URL = DEV_URL;
 
 const app = express();
 
