@@ -10,7 +10,11 @@ const stripe = require("stripe")("sk_test_nx09k6MnBsuJlf2zxqiELTtU006U2u3c6K", {
 });
 const BitlyClient = require("bitly").BitlyClient;
 const bitly = new BitlyClient("cfbe9e5decc7f04ac3bffea812a419a1ff4ec4cd");
-var validUrl = require("valid-url");
+const validUrl = require("valid-url");
+const TWILIO_ACCOUNT_SID = "AC71d24513140aedd57cb3770cca6267f0";
+const TWILIO_AUTH_TOKEN = "1b9264c7f64be1cfdb89b0784fe86f02";
+const TWILIO_SERVICE_SID = "VA0cbea0c0bf4afd8dbf85c4b2f726d1a6";
+const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const Newsletter = require("./models/newsletter");
 const Payment = require("./models/payment");
@@ -153,6 +157,54 @@ app.post("/short-link", async (req, res) => {
 app.post("/validate-url", (req, res) => {
   let result = validateUrl(req.body.url);
   res.json({ status: 200, message: result });
+});
+
+app.post("/send-code", async (req, res) => {
+  console.log(req.body);
+
+  await client.verify
+    .services(TWILIO_SERVICE_SID)
+    .verifications.create({
+      to: req.body.phoneNumber,
+      channel: "sms",
+    })
+    .then((verification) => {
+      console.log("verification", verification);
+      res.json({ status: 200, message: "success" });
+    })
+    .catch((err) => {
+      if (err) {
+        res.json({ status: 200, message: "invalid no" });
+      }
+    });
+});
+
+app.post("/verify-code", async (req, res) => {
+  console.log(req.body);
+
+  await client.verify
+    .services(TWILIO_SERVICE_SID)
+    .verificationChecks.create({
+      to: req.body.phoneNumber,
+      code: req.body.code,
+    })
+    .then((verification) => {
+      console.log("check", verification);
+      res.json({
+        status: 200,
+        message: "success",
+        verifyStatus: verification.status,
+      });
+    })
+    .catch((err) => {
+      if (err) {
+        console.log(err);
+        res.json({
+          status: 200,
+          message: "invalid code",
+        });
+      }
+    });
 });
 
 async function shortenUrl(url) {
