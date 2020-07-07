@@ -11,9 +11,9 @@ const stripe = require("stripe")("sk_test_nx09k6MnBsuJlf2zxqiELTtU006U2u3c6K", {
 const BitlyClient = require("bitly").BitlyClient;
 const bitly = new BitlyClient("cfbe9e5decc7f04ac3bffea812a419a1ff4ec4cd");
 const validUrl = require("valid-url");
-const TWILIO_ACCOUNT_SID = "AC71d24513140aedd57cb3770cca6267f0";
-const TWILIO_AUTH_TOKEN = "1b9264c7f64be1cfdb89b0784fe86f02";
-const TWILIO_SERVICE_SID = "VA0cbea0c0bf4afd8dbf85c4b2f726d1a6";
+const TWILIO_ACCOUNT_SID = process.env.TWILIO_ACCOUNT_SID;
+const TWILIO_AUTH_TOKEN = process.env.TWILIO_AUTH_TOKEN;
+const TWILIO_SERVICE_SID = process.env.TWILIO_SERVICE_SID;
 const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const Newsletter = require("./models/newsletter");
