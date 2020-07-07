@@ -174,7 +174,7 @@ app.post("/send-code", async (req, res) => {
     })
     .catch((err) => {
       if (err) {
-        res.json({ status: 200, message: "invalid no" });
+        res.json({ status: 200, message: "invalid no", api_response: err });
       }
     });
 });
@@ -202,6 +202,7 @@ app.post("/verify-code", async (req, res) => {
         res.json({
           status: 200,
           message: "invalid code",
+          api_response: err,
         });
       }
     });
