@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const formidable = require("formidable");
 const mongoose = require("mongoose");
-const stripe = require("stripe")("sk_test_nx09k6MnBsuJlf2zxqiELTtU006U2u3c6K", {
+const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY, {
   apiVersion: "",
 });
 const BitlyClient = require("bitly").BitlyClient;
@@ -206,6 +206,33 @@ app.post("/verify-code", async (req, res) => {
         });
       }
     });
+});
+
+app.post("/charge-card", async (req, res) => {
+  try {
+    console.log(req.body);
+
+    const token = req.body.token;
+
+    const charge = await stripe.charges.create({
+      amount: 500,
+      currency: "usd",
+      description: "Example charge",
+      source: token,
+    });
+
+    const customer = await stripe.customers.create({
+      email: "ds.sparkle018@gmail.com",
+      name: "testing",
+      description: "test customer",
+    });
+
+    console.log(charge);
+    console.log(customer);
+    res.json({ status: 200, message: "success", charge, customer });
+  } catch (err) {
+    res.json({ message: "error", error: err });
+  }
 });
 
 async function shortenUrl(url) {
