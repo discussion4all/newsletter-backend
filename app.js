@@ -72,6 +72,7 @@ app.get("/user-info", (req, res) => {
 app.post("/create", async (req, res) => {
   // console.log(req.body);
   const newNewsletter = new Newsletter({
+    newsletterId: req.body.newsletterId,
     imageUrl: req.body.image,
     title: req.body.title,
     description: req.body.description,
@@ -80,6 +81,16 @@ app.post("/create", async (req, res) => {
 
   await newNewsletter.save();
   res.json({ status: 200, message: "success" });
+});
+
+app.get("/get-record/:id", async (req, res) => {
+  console.log(req.params.id);
+
+  const newsletter = await Newsletter.findOne({
+    newsletterId: req.params.id,
+  });
+
+  res.json({ status: 200, message: "success", data: newsletter });
 });
 
 // payment
@@ -213,23 +224,24 @@ app.post("/charge-card", async (req, res) => {
     console.log(req.body);
 
     const token = req.body.token;
-
+    console.log("pay value...", req.body.pay.slice(1) + "00");
+    const pay = parseFloat(req.body.pay.slice(1) + "00");
     const charge = await stripe.charges.create({
-      amount: 500,
+      amount: pay,
       currency: "usd",
       description: "Example charge",
       source: token,
     });
 
-    const customer = await stripe.customers.create({
-      email: "ds.sparkle018@gmail.com",
-      name: "testing",
-      description: "test customer",
-    });
+    // const customer = await stripe.customers.create({
+    //   email: "ds.sparkle018@gmail.com",
+    //   name: "testing",
+    //   description: "test customer",
+    // });
 
     console.log(charge);
-    console.log(customer);
-    res.json({ status: 200, message: "success", charge, customer });
+    // console.log(customer);
+    res.json({ status: 200, message: "success", charge });
   } catch (err) {
     res.json({ message: "error", error: err });
   }
