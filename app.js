@@ -77,6 +77,8 @@ app.post("/create", async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     sampleText: req.body.sampleText,
+    monthlyPrice: "",
+    yearlyPrice: "",
   });
 
   await newNewsletter.save();
@@ -105,10 +107,30 @@ app.post("/payment", async (req, res) => {
     },
     (err, result) => {
       console.log("record updated", result);
-      res.json({
-        status: 200,
-        message: "success",
-      });
+      // res.json({
+      //   status: 200,
+      //   message: "success",
+      // });
+    }
+  );
+
+  Newsletter.findOneAndUpdate(
+    {
+      newsletterId: req.body.newsletterId,
+    },
+    {
+      monthlyPrice: req.body.monthly,
+      yearlyPrice: req.body.yearly,
+    },
+    (err, record) => {
+      if (!err) {
+        console.log("record", record);
+        res.json({
+          status: 200,
+          message: "success",
+        });
+      }
+      console.log("err", err);
     }
   );
 });

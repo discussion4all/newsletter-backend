@@ -21,6 +21,12 @@ const newsletterSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  monthlyPrice: {
+    type: String,
+  },
+  yearlyPrice: {
+    type: String,
+  },
 });
 
 const Newsletter = mongoose.model("Newsletter", newsletterSchema);
