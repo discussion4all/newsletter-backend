@@ -182,13 +182,28 @@ app.get("/charge", (req, res) => {
 
 // short link
 app.post("/short-link", async (req, res) => {
-  console.log(req.body.link);
-  let shortLink = await shortenUrl(req.body.link);
-  res.json({ status: 200, message: "success", link: shortLink });
+  try {
+    let link = req.body.link;
+    if (link.slice(0, 4) !== "http") {
+      console.log("add http in front...");
+      link = "http://" + link;
+    }
+    let shortLink = await shortenUrl(link);
+    // console.log("short", shortLink);
+    res.json({ status: 200, message: "success", link: shortLink });
+  } catch (err) {
+    res.json({ status: 200, message: "invalid" });
+    console.log("this", err);
+  }
 });
 
 app.post("/validate-url", (req, res) => {
-  let result = validateUrl(req.body.url);
+  let url = req.body.url;
+  if (url.slice(0, 4) !== "http") {
+    url = "http://" + url;
+  }
+  let result = validateUrl(url);
+
   res.json({ status: 200, message: result });
 });
 
@@ -271,7 +286,7 @@ app.post("/charge-card", async (req, res) => {
 
 async function shortenUrl(url) {
   const response = await bitly.shorten(url);
-  console.log(response);
+  // console.log(response);
   return response.link;
 }
 
