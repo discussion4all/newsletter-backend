@@ -18,6 +18,7 @@ const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
 const Newsletter = require("./models/newsletter");
 const Payment = require("./models/payment");
+const sendTextRouter = require("./routes/send-text");
 
 const PORT = process.env.PORT || 9000;
 const PROD_URL = "http://ec2-34-224-95-146.compute-1.amazonaws.com:9000/";
@@ -34,6 +35,8 @@ mongoose.connect("mongodb://localhost:27017/newsletter", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
+
+app.use("/send-text", sendTextRouter);
 
 app.get("/", (req, res) => {
   res.send({ data: "Server is live" });
@@ -86,8 +89,6 @@ app.post("/create", async (req, res) => {
 });
 
 app.get("/get-record/:id", async (req, res) => {
-  console.log(req.params.id);
-
   const newsletter = await Newsletter.findOne({
     newsletterId: req.params.id,
   });
