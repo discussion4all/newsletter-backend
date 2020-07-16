@@ -21,11 +21,22 @@ const newsletterSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  monthlyPrice: {
-    type: String,
+  plans: {
+    yearly: {
+      type: String,
+      default: "$0",
+    },
+    monthly: {
+      type: String,
+      default: "$0",
+    },
   },
-  yearlyPrice: {
-    type: String,
+  subscribers: {
+    type: [String],
+  },
+  textSent: {
+    type: Number,
+    default: 0,
   },
 });
 

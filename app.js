@@ -19,11 +19,10 @@ const client = require("twilio")(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 const Newsletter = require("./models/newsletter");
 const Payment = require("./models/payment");
 const sendTextRouter = require("./routes/send-text");
+const newsletterRouter = require("./routes/newsletter");
 
 const PORT = process.env.PORT || 9000;
-const PROD_URL = "http://ec2-34-224-95-146.compute-1.amazonaws.com:9000/";
-const DEV_URL = "http://localhost:9000";
-const BASE_URL = DEV_URL;
+const BASE_URL = process.env.DEV_URL;
 
 const app = express();
 
@@ -37,6 +36,7 @@ mongoose.connect("mongodb://localhost:27017/newsletter", {
 });
 
 app.use("/send-text", sendTextRouter);
+app.use("/newsletter", newsletterRouter);
 
 app.get("/", (req, res) => {
   res.send({ data: "Server is live" });
@@ -72,21 +72,21 @@ app.get("/user-info", (req, res) => {
 });
 
 // create newsletter
-app.post("/create", async (req, res) => {
-  // console.log(req.body);
-  const newNewsletter = new Newsletter({
-    newsletterId: req.body.newsletterId,
-    imageUrl: req.body.image,
-    title: req.body.title,
-    description: req.body.description,
-    sampleText: req.body.sampleText,
-    monthlyPrice: "",
-    yearlyPrice: "",
-  });
+// app.post("/create", async (req, res) => {
+//   // console.log(req.body);
+//   const newNewsletter = new Newsletter({
+//     newsletterId: req.body.newsletterId,
+//     imageUrl: req.body.image,
+//     title: req.body.title,
+//     description: req.body.description,
+//     sampleText: req.body.sampleText,
+//     monthlyPrice: "",
+//     yearlyPrice: "",
+//   });
 
-  await newNewsletter.save();
-  res.json({ status: 200, message: "success" });
-});
+//   await newNewsletter.save();
+//   res.json({ status: 200, message: "success" });
+// });
 
 app.get("/get-record/:id", async (req, res) => {
   const newsletter = await Newsletter.findOne({
@@ -97,44 +97,44 @@ app.get("/get-record/:id", async (req, res) => {
 });
 
 // payment
-app.post("/payment", async (req, res) => {
-  console.log(req.body);
+// app.post("/payment", async (req, res) => {
+//   console.log(req.body);
 
-  Payment.findOneAndUpdate(
-    { id: 1 },
-    {
-      monthly: req.body.monthly ? parseFloat(req.body.monthly) : 0,
-      yearly: req.body.yearly ? parseFloat(req.body.yearly) : 0,
-    },
-    (err, result) => {
-      console.log("record updated", result);
-      // res.json({
-      //   status: 200,
-      //   message: "success",
-      // });
-    }
-  );
+//   Payment.findOneAndUpdate(
+//     { id: 1 },
+//     {
+//       monthly: req.body.monthly ? parseFloat(req.body.monthly) : 0,
+//       yearly: req.body.yearly ? parseFloat(req.body.yearly) : 0,
+//     },
+//     (err, result) => {
+//       console.log("record updated", result);
+//       // res.json({
+//       //   status: 200,
+//       //   message: "success",
+//       // });
+//     }
+//   );
 
-  Newsletter.findOneAndUpdate(
-    {
-      newsletterId: req.body.newsletterId,
-    },
-    {
-      monthlyPrice: req.body.monthly,
-      yearlyPrice: req.body.yearly,
-    },
-    (err, record) => {
-      if (!err) {
-        console.log("record", record);
-        res.json({
-          status: 200,
-          message: "success",
-        });
-      }
-      console.log("err", err);
-    }
-  );
-});
+//   Newsletter.findOneAndUpdate(
+//     {
+//       newsletterId: req.body.newsletterId,
+//     },
+//     {
+//       monthlyPrice: req.body.monthly,
+//       yearlyPrice: req.body.yearly,
+//     },
+//     (err, record) => {
+//       if (!err) {
+//         console.log("record", record);
+//         res.json({
+//           status: 200,
+//           message: "success",
+//         });
+//       }
+//       console.log("err", err);
+//     }
+//   );
+// });
 
 // stripe
 app.post("/stripe", async (req, res) => {
@@ -257,33 +257,33 @@ app.post("/verify-code", async (req, res) => {
     });
 });
 
-app.post("/charge-card", async (req, res) => {
-  try {
-    console.log(req.body);
+// app.post("/charge-card", async (req, res) => {
+//   try {
+//     console.log(req.body);
 
-    const token = req.body.token;
-    console.log("pay value...", req.body.pay.slice(1) + "00");
-    const pay = parseFloat(req.body.pay.slice(1) + "00");
-    const charge = await stripe.charges.create({
-      amount: pay,
-      currency: "usd",
-      description: "Example charge",
-      source: token,
-    });
+//     const token = req.body.token;
+//     console.log("pay value...", req.body.pay.slice(1) + "00");
+//     const pay = parseFloat(req.body.pay.slice(1) + "00");
+//     const charge = await stripe.charges.create({
+//       amount: pay,
+//       currency: "usd",
+//       description: "Example charge",
+//       source: token,
+//     });
 
-    // const customer = await stripe.customers.create({
-    //   email: "ds.sparkle018@gmail.com",
-    //   name: "testing",
-    //   description: "test customer",
-    // });
+//     // const customer = await stripe.customers.create({
+//     //   email: "ds.sparkle018@gmail.com",
+//     //   name: "testing",
+//     //   description: "test customer",
+//     // });
 
-    console.log(charge);
-    // console.log(customer);
-    res.json({ status: 200, message: "success", charge });
-  } catch (err) {
-    res.json({ message: "error", error: err });
-  }
-});
+//     console.log(charge);
+//     // console.log(customer);
+//     res.json({ status: 200, message: "success", charge });
+//   } catch (err) {
+//     res.json({ message: "error", error: err });
+//   }
+// });
 
 async function shortenUrl(url) {
   const response = await bitly.shorten(url);
