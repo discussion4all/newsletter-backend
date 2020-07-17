@@ -7,6 +7,7 @@ const client = require("twilio")(
 );
 
 const Newsletter = require("../models/newsletter");
+const ScheduleTexts = require("../models/schedule-texts");
 
 // SEND TEXT NOW
 router.post("/now", async (req, res) => {
@@ -35,6 +36,20 @@ router.post("/now", async (req, res) => {
   } catch (err) {
     res.json({ status: 200, message: "failed", error: err });
   }
+});
+
+// SCHEDULE TEXTS
+router.post("/schedule", async (req, res) => {
+  const { newsletterId, time, text } = req.body;
+
+  const newSchedule = new ScheduleTexts({
+    newsletterId,
+    time,
+    text,
+  });
+
+  await newSchedule.save();
+  res.status(200).json({ message: "success" });
 });
 
 const getSubscribers = async (newsletterId) => {
