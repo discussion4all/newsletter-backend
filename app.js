@@ -13,6 +13,7 @@ const sendTextRouter = require("./routes/send-text");
 const newsletterRouter = require("./routes/newsletter");
 const verificationCodeRouter = require("./routes/verification-code");
 const linkRouter = require("./routes/link");
+const scheduleTexts = require("./utils/scheduleTexts");
 
 const PORT = process.env.PORT || 9000;
 const BASE_URL = process.env.DEV_URL;
@@ -85,6 +86,8 @@ app.get("/charge", async (req, res) => {
 
   res.json({ status: 200, message: "success" });
 });
+
+scheduleTexts();
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
