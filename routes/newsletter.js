@@ -98,4 +98,13 @@ router.post("/subscribe", async (req, res) => {
   }
 });
 
+//GET NEWSLETTER BY ID
+router.get("/:id", async (req, res) => {
+  const newsletter = await Newsletter.findOne({
+    newsletterId: req.params.id,
+  });
+
+  res.json({ status: 200, message: "success", data: newsletter });
+});
+
 module.exports = router;

@@ -8,6 +8,7 @@ const client = require("twilio")(
 
 const Newsletter = require("../models/newsletter");
 
+// SEND TEXT NOW
 router.post("/now", async (req, res) => {
   try {
     const { newsletterId } = req.body;
