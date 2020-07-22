@@ -58,19 +58,6 @@ app.post("/image-upload", (req, res) => {
   });
 });
 
-// // stripe
-// app.post("/stripe", async (req, res) => {
-//   const response = await stripe.oauth.token({
-//     grant_type: "authorization_code",
-//     code: req.body.code,
-//   });
-
-//   res.json({
-//     status: 200,
-//     message: "success",
-//   });
-// });
-
 // charge
 // app.get("/charge", async (req, res) => {
 //   const paymentIntent = await stripe.paymentIntents.create(
