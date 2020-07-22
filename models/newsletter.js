@@ -38,6 +38,10 @@ const newsletterSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  stripe_user_id: {
+    type: String,
+    default: "",
+  },
 });
 
 const Newsletter = mongoose.model("Newsletter", newsletterSchema);
