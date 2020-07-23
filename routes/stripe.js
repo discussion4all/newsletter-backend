@@ -31,27 +31,4 @@ router.post("/connect", async (req, res) => {
   );
 });
 
-router.post("/charge", async (req, res) => {
-  const newsletter = await Newsletter.findOne({
-    newsletterId: req.body.newsletterId,
-  });
-
-  const paymentIntent = await stripe.paymentIntents.create({
-    payment_method_types: ["card"],
-    amount: parseFloat(req.body.pay.slice(1)) * 100,
-    currency: "usd",
-    description: "send it other account",
-
-    transfer_data: {
-      destination: newsletter.stripe_user_id,
-    },
-  });
-
-  res.json({
-    status: 200,
-    message: "success",
-    client_secret: paymentIntent.client_secret,
-  });
-});
-
 module.exports = router;

@@ -55,19 +55,22 @@ router.post("/update-plans", async (req, res) => {
 // SUBSCRIBE TO NEWSLETTER
 router.post("/subscribe", async (req, res) => {
   try {
-    const { token, phoneNumber, newsletterId } = req.body;
-    const pay = parseFloat(req.body.pay.slice(1) + "00");
+    const { phoneNumber, newsletterId } = req.body;
 
-    const charge = await stripe.charges.create({
-      amount: pay,
-      currency: "usd",
-      description: "Example charge",
-      source: token,
+    const newsletter = await Newsletter.findOne({
+      newsletterId: newsletterId,
     });
-    console.log("phone", phoneNumber);
-    console.log("charge", charge);
 
-    if (charge.status === "succeeded") {
+    const paymentIntent = await stripe.paymentIntents.create({
+      payment_method_types: ["card"],
+      amount: parseFloat(req.body.pay.slice(1)) * 100,
+      currency: "usd",
+      transfer_data: {
+        destination: newsletter.stripe_user_id,
+      },
+    });
+
+    if (paymentIntent.client_secret) {
       Newsletter.findOneAndUpdate(
         {
           newsletterId: newsletterId,
@@ -82,6 +85,7 @@ router.post("/subscribe", async (req, res) => {
             res.json({
               status: 200,
               message: "success",
+              client_secret: paymentIntent.client_secret,
             });
           } else {
             res.json({
