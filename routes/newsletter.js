@@ -63,11 +63,16 @@ router.post("/subscribe", async (req, res) => {
 
     const amount = parseFloat(req.body.pay.slice(1)) * 100;
 
+    const stripeFee = amount * 0.029 + 30;
+    const narateFee = amount * 0.05;
+
+    console.log({ amount, stripeFee, narateFee, total: stripeFee + narateFee });
+
     const paymentIntent = await stripe.paymentIntents.create({
       payment_method_types: ["card"],
       amount: amount,
       currency: "usd",
-      application_fee_amount: amount * 0.05,
+      application_fee_amount: Math.round(stripeFee + narateFee),
       transfer_data: {
         destination: newsletter.stripe_user_id,
       },
