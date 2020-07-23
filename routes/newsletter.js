@@ -61,10 +61,13 @@ router.post("/subscribe", async (req, res) => {
       newsletterId: newsletterId,
     });
 
+    const amount = parseFloat(req.body.pay.slice(1)) * 100;
+
     const paymentIntent = await stripe.paymentIntents.create({
       payment_method_types: ["card"],
-      amount: parseFloat(req.body.pay.slice(1)) * 100,
+      amount: amount,
       currency: "usd",
+      application_fee_amount: amount * 0.05,
       transfer_data: {
         destination: newsletter.stripe_user_id,
       },
