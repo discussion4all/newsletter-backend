@@ -10,15 +10,26 @@ const Newsletter = require("../models/newsletter");
 router.post("/create", async (req, res) => {
   const { newsletterId, image, title, description, sampleText } = req.body;
 
-  const newNewsletter = new Newsletter({
-    newsletterId: newsletterId,
-    imageUrl: image,
-    title: title,
-    description: description,
-    sampleText: sampleText,
-  });
+  const product = await stripe.products.create(
+    {
+      name: title,
+    },
+    async (err, product) => {
+      const newNewsletter = new Newsletter({
+        newsletterId: newsletterId,
+        imageUrl: image,
+        title: title,
+        description: description,
+        sampleText: sampleText,
+        stripe: {
+          product_id: product.id,
+        },
+      });
 
-  await newNewsletter.save();
+      await newNewsletter.save();
+    }
+  );
+
   res.json({ status: 200, message: "success" });
 });
 
@@ -26,7 +37,33 @@ router.post("/create", async (req, res) => {
 router.post("/update-plans", async (req, res) => {
   const { newsletterId, monthly, yearly } = req.body;
 
-  const updatedRecord = Newsletter.findOneAndUpdate(
+  const newsletter = await Newsletter.findOne({
+    newsletterId: newsletterId,
+  });
+
+  let monthPlan, yearPlan;
+
+  if (yearly) {
+    yearPlan = await stripe.plans.create({
+      amount: parseFloat(yearly.slice(1)) * 100,
+      currency: "usd",
+      interval: "year",
+      product: newsletter.stripe.product_id,
+    });
+  }
+  if (monthly) {
+    monthPlan = await stripe.plans.create({
+      amount: parseFloat(monthly.slice(1)) * 100,
+      currency: "usd",
+      interval: "month",
+      product: newsletter.stripe.product_id,
+    });
+  }
+
+  // console.log("monthPlan", monthPlan, "yearPlan", yearPlan);
+  console.log(monthly, yearly);
+
+  const updatedRecord = await Newsletter.findOneAndUpdate(
     {
       newsletterId: newsletterId,
     },
@@ -35,6 +72,8 @@ router.post("/update-plans", async (req, res) => {
         monthly: monthly,
         yearly: yearly,
       },
+      "stripe.month_plan_id": monthPlan ? monthPlan.id : "",
+      "stripe.year_plan_id": yearPlan ? yearPlan.id : "",
     },
     (err, record) => {
       if (!err) {
@@ -43,6 +82,7 @@ router.post("/update-plans", async (req, res) => {
           message: "success",
         });
       } else {
+        console.log(err);
         res.json({
           status: 200,
           message: "failed in updating plans",
@@ -61,6 +101,16 @@ router.post("/subscribe", async (req, res) => {
       newsletterId: newsletterId,
     });
 
+    // stripe.subscriptions.create(
+    //   {
+    //     customer: "cus_HRIQY9dLFTz1bC",
+    //     items: [{ plan: "price_1GuWuMGbQku71cs1iRNeUIKI" }],
+    //   },
+    //   function (err, subscription) {
+    //     // asynchronously called
+    //   }
+    // );
+
     const amount = parseFloat(req.body.pay.slice(1)) * 100;
 
     const stripeFee = amount * 0.029 + 30;
@@ -74,7 +124,7 @@ router.post("/subscribe", async (req, res) => {
       currency: "usd",
       application_fee_amount: Math.round(stripeFee + narateFee),
       transfer_data: {
-        destination: newsletter.stripe_user_id,
+        destination: newsletter.stripe.connect_account_id,
       },
     });
 

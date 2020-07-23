@@ -38,9 +38,23 @@ const newsletterSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
-  stripe_user_id: {
-    type: String,
-    default: "",
+  stripe: {
+    connect_account_id: {
+      type: String,
+      default: "",
+    },
+    product_id: {
+      type: String,
+      default: "",
+    },
+    month_plan_id: {
+      type: String,
+      default: "",
+    },
+    year_plan_id: {
+      type: String,
+      default: "",
+    },
   },
 });
 

@@ -17,7 +17,9 @@ router.post("/connect", async (req, res) => {
       newsletterId: newsletterId,
     },
     {
-      stripe_user_id: response.stripe_user_id,
+      stripe: {
+        connect_account_id: response.stripe_user_id,
+      },
     },
     (err, record) => {
       if (!err) {
