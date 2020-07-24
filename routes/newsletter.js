@@ -5,6 +5,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY, {
 });
 
 const Newsletter = require("../models/newsletter");
+const Customer = require("../models/customer");
 
 // CRATE NEWSLETTER
 router.post("/create", async (req, res) => {
@@ -95,40 +96,60 @@ router.post("/update-plans", async (req, res) => {
 // SUBSCRIBE TO NEWSLETTER
 router.post("/subscribe", async (req, res) => {
   try {
-    const { phoneNumber, newsletterId } = req.body;
+    const { plan, token, phoneNumber, newsletterId } = req.body;
 
     const newsletter = await Newsletter.findOne({
       newsletterId: newsletterId,
     });
 
-    // stripe.subscriptions.create(
-    //   {
-    //     customer: "cus_HRIQY9dLFTz1bC",
-    //     items: [{ plan: "price_1GuWuMGbQku71cs1iRNeUIKI" }],
-    //   },
-    //   function (err, subscription) {
-    //     // asynchronously called
-    //   }
-    // );
+    let customer = await Customer.findOne({
+      phone: phoneNumber,
+    });
 
-    const amount = parseFloat(req.body.pay.slice(1)) * 100;
+    if (!customer) {
+      console.log("customer not found plz create one");
+      const stripeCustomer = await stripe.customers.create({
+        phone: phoneNumber,
+        source: token,
+      });
 
-    const stripeFee = amount * 0.029 + 30;
-    const narateFee = amount * 0.05;
+      customer = {
+        phone: phoneNumber,
+        customer_id: stripeCustomer.id,
+      };
 
-    console.log({ amount, stripeFee, narateFee, total: stripeFee + narateFee });
+      const newCustomer = new Customer({
+        phone: phoneNumber,
+        customer_id: stripeCustomer.id,
+      });
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      payment_method_types: ["card"],
-      amount: amount,
-      currency: "usd",
-      application_fee_amount: Math.round(stripeFee + narateFee),
+      await newCustomer.save();
+    }
+
+    let planType = "month_plan_id";
+    if (plan === "yearly") {
+      planType = "year_plan_id";
+    }
+    // console.log("planType", planType);
+    // console.log("customer", customer);
+
+    const subscription = await stripe.subscriptions.create({
+      customer: customer.customer_id,
+      items: [
+        {
+          plan: newsletter.stripe[planType],
+        },
+      ],
+      expand: ["latest_invoice.payment_intent"],
+      application_fee_percent: 5 + 2.9,
       transfer_data: {
         destination: newsletter.stripe.connect_account_id,
       },
     });
 
-    if (paymentIntent.client_secret) {
+    // console.log("subscription", subscription);
+
+    if (subscription.id) {
       Newsletter.findOneAndUpdate(
         {
           newsletterId: newsletterId,
@@ -143,7 +164,6 @@ router.post("/subscribe", async (req, res) => {
             res.json({
               status: 200,
               message: "success",
-              client_secret: paymentIntent.client_secret,
             });
           } else {
             res.json({
@@ -154,6 +174,50 @@ router.post("/subscribe", async (req, res) => {
         }
       );
     }
+
+    // const amount = parseFloat(req.body.pay.slice(1)) * 100;
+
+    // const stripeFee = amount * 0.029 + 30;
+    // const narateFee = amount * 0.05;
+
+    // console.log({ amount, stripeFee, narateFee, total: stripeFee + narateFee });
+
+    // const paymentIntent = await stripe.paymentIntents.create({
+    //   payment_method_types: ["card"],
+    //   amount: amount,
+    //   currency: "usd",
+    //   application_fee_amount: Math.round(stripeFee + narateFee),
+    //   transfer_data: {
+    //     destination: newsletter.stripe.connect_account_id,
+    //   },
+    // });
+
+    // if (paymentIntent.client_secret) {
+    //   Newsletter.findOneAndUpdate(
+    //     {
+    //       newsletterId: newsletterId,
+    //     },
+    //     {
+    //       $addToSet: {
+    //         subscribers: phoneNumber,
+    //       },
+    //     },
+    //     (err, record) => {
+    //       if (!err) {
+    //         res.json({
+    //           status: 200,
+    //           message: "success",
+    //           client_secret: paymentIntent.client_secret,
+    //         });
+    //       } else {
+    //         res.json({
+    //           status: 200,
+    //           message: "failed in adding you to subscribers list",
+    //         });
+    //       }
+    //     }
+    //   );
+    // }
   } catch (err) {
     console.log(err);
     res.json({ status: 500, message: "payment failed", error: err });
