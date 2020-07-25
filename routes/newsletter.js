@@ -141,7 +141,7 @@ router.post("/subscribe", async (req, res) => {
         },
       ],
       expand: ["latest_invoice.payment_intent"],
-      application_fee_percent: 5 + 2.9,
+      application_fee_percent: 7.5,
       transfer_data: {
         destination: newsletter.stripe.connect_account_id,
       },
