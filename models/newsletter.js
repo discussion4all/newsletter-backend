@@ -38,6 +38,10 @@ const newsletterSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  total_text_sent: {
+    type: Number,
+    default: 0,
+  },
   stripe: {
     connect_account_id: {
       type: String,
