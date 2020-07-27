@@ -25,6 +25,7 @@ router.post("/create", async (req, res) => {
         stripe: {
           product_id: product.id,
         },
+        created_on: new Date(),
       });
 
       await newNewsletter.save();

@@ -60,6 +60,9 @@ const newsletterSchema = new mongoose.Schema({
       default: "",
     },
   },
+  created_on: {
+    type: Date,
+  },
 });
 
 const Newsletter = mongoose.model("Newsletter", newsletterSchema);

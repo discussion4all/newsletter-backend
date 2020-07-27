@@ -15,10 +15,10 @@ const scheduleTexts = () => {
         $lt: new Date(),
       },
     });
-    console.log("schedules", schedules);
+    // console.log("schedules", schedules);
 
     if (schedules.length === 0) {
-      console.log("No schedules found, returning...");
+      // console.log("No schedules found, returning...");
       return;
     }
 

@@ -12,6 +12,7 @@ const verificationCodeRouter = require("./routes/verification-code");
 const linkRouter = require("./routes/link");
 const stripeRouter = require("./routes/stripe");
 const scheduleTexts = require("./utils/scheduleTexts");
+const monthlyCharge = require("./utils/monthlyCharge");
 
 const PORT = process.env.PORT || 9000;
 const BASE_URL = process.env.DEV_URL;
@@ -56,6 +57,7 @@ app.post("/image-upload", (req, res) => {
 });
 
 scheduleTexts();
+monthlyCharge();
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

@@ -39,6 +39,7 @@ router.post("/now", async (req, res) => {
           newsletterId,
           totalTextSent
         );
+        addToSchedule(newsletterId, new Date(), text);
         res.json({ status: 200, message: "success" });
       })
       .catch((err) => {
@@ -58,6 +59,8 @@ router.post("/schedule", async (req, res) => {
     newsletterId,
     time,
     text,
+    is_scheduled: "yes",
+    created_on: new Date(),
   });
 
   await newSchedule.save();
@@ -91,6 +94,19 @@ const updateTextSent = (newsletterId, totalTextSent) => {
       return err;
     }
   );
+};
+
+const addToSchedule = (newsletterId, time, text) => {
+  const newSchedule = new ScheduleTexts({
+    newsletterId,
+    time,
+    text,
+    completed: true,
+    is_scheduled: "no",
+    created_on: new Date(),
+  });
+
+  newSchedule.save();
 };
 
 module.exports = router;

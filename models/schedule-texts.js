@@ -17,6 +17,13 @@ const scheduleTextSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  is_scheduled: {
+    type: String,
+    enum: ["yes", "no"],
+  },
+  created_on: {
+    type: Date,
+  },
 });
 
 const ScheduleTexts = mongoose.model("ScheduleTexts", scheduleTextSchema);
