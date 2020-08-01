@@ -4,7 +4,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY, {
 
 const Newsletter = require("../models/newsletter");
 
-const HOUR_24 = 60 * 1000;
+const HOUR_24 = 24 * 60 * 60 * 1000;
 
 const monthlyCharge = () => {
   setInterval(async () => {
