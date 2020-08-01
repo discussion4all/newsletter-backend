@@ -6,7 +6,7 @@ const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY, {
 
 const Newsletter = require("../models/newsletter");
 const Customer = require("../models/customer");
-const sendSMS = require("../utils/sendSMS");
+// const sendSMS = require("../utils/sendSMS");
 const createMsgService = require("../utils/createMsgService");
 
 // CRATE NEWSLETTER
@@ -154,9 +154,9 @@ router.post("/subscribe", async (req, res) => {
     // console.log("subscription", subscription);
     // console.log("status: ", subscription.latest_invoice.payment_intent.status);
 
-    if (subscription.latest_invoice.payment_intent.status === "succeeded") {
-      sendSMS(phoneNumber, "success", newsletter.title);
-    }
+    // if (subscription.latest_invoice.payment_intent.status === "succeeded") {
+    //   sendSMS(phoneNumber, "success", newsletter.title);
+    // }
 
     if (subscription.id) {
       Newsletter.findOneAndUpdate(

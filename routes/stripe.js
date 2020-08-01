@@ -3,6 +3,7 @@ const router = express.Router();
 const stripe = require("stripe")(process.env.STRIPE_SECRET_TEST_KEY);
 
 const Newsletter = require("../models/newsletter");
+const webhook = require("../utils/stripeWebhook");
 
 router.post("/connect", async (req, res) => {
   const { newsletterId } = req.body;
@@ -30,5 +31,7 @@ router.post("/connect", async (req, res) => {
     }
   );
 });
+
+router.post("/webhook", webhook);
 
 module.exports = router;
