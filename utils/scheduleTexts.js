@@ -26,12 +26,12 @@ const scheduleTexts = () => {
     const subscribers = await getsubs(newsletterIds);
 
     schedules.map(async (schedule) => {
-      const subs = subscribers[schedule.newsletterId];
+      const subs = subscribers[schedule.newsletterId].subscribers;
       Promise.all(
         subs.map((number) => {
           return client.messages.create({
             body: schedule.text,
-            from: process.env.TWILIO_MESSAGING_SERVICE_SID,
+            from: subscribers[schedule.newsletterId].msgServiceSid,
             to: number,
           });
         })
@@ -53,7 +53,10 @@ async function getsubs(newsletterIds) {
   });
   let subsObject = {};
   const subs = newsletters.map((e) => {
-    subsObject[e.newsletterId] = e.subscribers;
+    subsObject[e.newsletterId] = {
+      subscribers: e.subscribers,
+      msgServiceSid: e.twilio.msg_service_sid,
+    };
   });
 
   return subsObject;

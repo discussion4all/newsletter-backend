@@ -15,7 +15,7 @@ router.post("/now", async (req, res) => {
   try {
     const { newsletterId, text } = req.body;
     const data = await fetchData(newsletterId);
-    const { subscribers, total_text_sent } = data;
+    const { subscribers, total_text_sent, msgServiceSid } = data;
     let msgSet = 1;
     if (text.length > TWILIO_CHARACTER_LIMIT) {
       msgSet = Math.ceil(text.length / TWILIO_CHARACTER_LIMIT);
@@ -27,7 +27,7 @@ router.post("/now", async (req, res) => {
       subscribers.map((number) => {
         return client.messages.create({
           body: text,
-          from: process.env.TWILIO_MESSAGING_SERVICE_SID,
+          from: msgServiceSid,
           to: number,
         });
       })
@@ -75,6 +75,7 @@ const fetchData = async (newsletterId) => {
   return {
     subscribers: newsletter.subscribers,
     total_text_sent: newsletter.total_text_sent,
+    msgServiceSid: newsletter.twilio.msg_service_sid,
   };
 };
 
