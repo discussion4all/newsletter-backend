@@ -9,17 +9,17 @@ const SUCCESS = (newsletterName) =>
 const FAIL = (newsletterName) =>
   `We are unable to charge your credit card & have paused your subscription to ${newsletterName}. Please contact us at spencerkier@gmail.com.`;
 
-const sendSMS = (number, messageType, newsletterName) => {
+const sendSMS = (number, messageType, newsletterName, msgServiceSid) => {
   let text = "";
   if (messageType === "success") {
     text = SUCCESS(newsletterName);
   } else {
     text = FAIL(newsletterName);
   }
-
+  console.log("sending text from sid ", msgServiceSid);
   client.messages.create({
     body: text,
-    from: process.env.TWILIO_MESSAGING_SERVICE_SID,
+    from: msgServiceSid,
     to: number,
   });
 };

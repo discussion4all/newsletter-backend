@@ -63,6 +63,12 @@ const newsletterSchema = new mongoose.Schema({
   created_on: {
     type: Date,
   },
+  twilio: {
+    msg_service_sid: {
+      type: String,
+      default: "",
+    },
+  },
 });
 
 const Newsletter = mongoose.model("Newsletter", newsletterSchema);

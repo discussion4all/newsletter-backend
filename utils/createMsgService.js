@@ -9,11 +9,12 @@ const createMsgService = async (name) => {
       friendlyName: name,
     })
     .then((service) => service);
-  console.log("service", service);
+  // console.log("service", service);
   await client.messaging
     .services(service.sid)
-    .phoneNumbers.create({ phoneNumberSid: process.env.PHONE_NUMBER_SID })
-    .then((phoneNumber) => console.log("phoneNumber", phoneNumber));
+    .phoneNumbers.create({ phoneNumberSid: process.env.PHONE_NUMBER_SID_1 })
+    .then((phoneNumber) => phoneNumber);
+  return service.sid;
 };
 
 module.exports = createMsgService;

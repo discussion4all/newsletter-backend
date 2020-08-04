@@ -16,13 +16,23 @@ async function webhook(req, res) {
   if (!customer) {
     return;
   }
-
+  console.log("from webhook...");
   switch (status) {
     case "active":
-      sendSMS(customerRecord.phone, "success", newsletter.title);
+      sendSMS(
+        customerRecord.phone,
+        "success",
+        newsletter.title,
+        newsletter.twilio.msg_service_sid
+      );
       break;
     case "past_due":
-      sendSMS(customerRecord.phone, "fail", newsletter.title);
+      sendSMS(
+        customerRecord.phone,
+        "fail",
+        newsletter.title,
+        newsletter.twilio.msg_service_sid
+      );
   }
 
   res.json({

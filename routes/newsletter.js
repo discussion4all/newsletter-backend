@@ -18,7 +18,8 @@ router.post("/create", async (req, res) => {
       name: title,
     },
     async (err, product) => {
-      // createMsgService(title);
+      const msgServiceSid = await createMsgService(title);
+      console.log("msg_service_sid", msgServiceSid);
       const newNewsletter = new Newsletter({
         newsletterId: newsletterId,
         imageUrl: image,
@@ -27,6 +28,9 @@ router.post("/create", async (req, res) => {
         sampleText: sampleText,
         stripe: {
           product_id: product.id,
+        },
+        twilio: {
+          msg_service_sid: msgServiceSid || "",
         },
         created_on: new Date(),
       });
