@@ -18,8 +18,16 @@ router.post("/create", async (req, res) => {
       name: title,
     },
     async (err, product) => {
-      const msgServiceSid = await createMsgService(title);
-      console.log("msg_service_sid", msgServiceSid);
+      const newsletters = await Newsletter.find({});
+
+      let msgServiceSid;
+      if (newsletters.length >= 2) {
+        msgServiceSid =
+          newsletters[newsletters.length - 1].twilio.msg_service_sid;
+      } else {
+        msgServiceSid = await createMsgService(title);
+      }
+
       const newNewsletter = new Newsletter({
         newsletterId: newsletterId,
         imageUrl: image,
