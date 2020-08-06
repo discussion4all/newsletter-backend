@@ -15,6 +15,7 @@ const scheduleTexts = require("./utils/scheduleTexts");
 const monthlyCharge = require("./utils/monthlyCharge");
 const getTwilioCharge = require("./utils/getTwilioCharge");
 const createChargeStripe = require("./utils/createChargeStripe");
+const { getBillings } = require("./utils/functions");
 
 const PORT = process.env.PORT || 9000;
 const BASE_URL = process.env.DEV_URL;
@@ -60,10 +61,11 @@ app.post("/image-upload", (req, res) => {
 
 scheduleTexts();
 monthlyCharge();
-getTwilioCharge(30).then((price) => {
-  console.log("Price", price);
-});
-createChargeStripe(306082);
+// getTwilioCharge(30).then((price) => {
+//   console.log("Price", price);
+// });
+// createChargeStripe(306082);
+getBillings(705092);
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

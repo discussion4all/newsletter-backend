@@ -68,6 +68,14 @@ const newsletterSchema = new mongoose.Schema({
       type: String,
       default: "",
     },
+    sub_account_sid: {
+      type: String,
+      default: "",
+    },
+    sub_account_auth_token: {
+      type: String,
+      default: "",
+    },
   },
 });
 

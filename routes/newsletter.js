@@ -8,6 +8,7 @@ const Newsletter = require("../models/newsletter");
 const Customer = require("../models/customer");
 // const sendSMS = require("../utils/sendSMS");
 const createMsgService = require("../utils/createMsgService");
+const { createSubAccount } = require("../utils/functions");
 
 // CRATE NEWSLETTER
 router.post("/create", async (req, res) => {
@@ -19,6 +20,11 @@ router.post("/create", async (req, res) => {
     },
     async (err, product) => {
       const newsletters = await Newsletter.find({});
+      const { subAccountSid, subAccountAuthToken } = await createSubAccount(
+        title
+      );
+
+      console.log({ subAccountSid, subAccountAuthToken });
 
       let msgServiceSid;
       if (newsletters.length >= 2) {
@@ -39,6 +45,8 @@ router.post("/create", async (req, res) => {
         },
         twilio: {
           msg_service_sid: msgServiceSid || "",
+          sub_account_sid: subAccountSid,
+          sub_account_auth_token: subAccountAuthToken,
         },
         created_on: new Date(),
       });
