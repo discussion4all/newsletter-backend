@@ -14,11 +14,8 @@ const stripeRouter = require("./routes/stripe");
 const scheduleTexts = require("./utils/scheduleTexts");
 const monthlyCharge = require("./utils/monthlyCharge");
 
-const createChargeStripe = require("./utils/createChargeStripe");
-const {
-  getTwilioBillings,
-  fetchAllPhoneNumbers,
-} = require("./utils/functions");
+const { getTwilioBillings } = require("./utils/twilioFunctions");
+const { chargeAccount } = require("./utils/stripeFunctions");
 
 const PORT = process.env.PORT || 9000;
 const BASE_URL = process.env.DEV_URL;
@@ -65,10 +62,19 @@ app.post("/image-upload", (req, res) => {
 scheduleTexts();
 monthlyCharge();
 
+// get twilio subaccount charge amount
 getTwilioBillings(705092).then((charge) =>
   console.log("charge is", charge, "usd")
 );
-fetchAllPhoneNumbers().then((numbers) => console.log("number", numbers));
+
+// charge the newsletter with id passed in args
+chargeAccount(705092, 2100)
+  .then((res) => {
+    console.log(res);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

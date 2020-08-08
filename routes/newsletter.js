@@ -8,7 +8,7 @@ const Newsletter = require("../models/newsletter");
 const Customer = require("../models/customer");
 // const sendSMS = require("../utils/sendSMS");
 const createMsgService = require("../utils/createMsgService");
-const { createSubAccount } = require("../utils/functions");
+const { createSubAccount } = require("../utils/twilioFunctions");
 
 // CRATE NEWSLETTER
 router.post("/create", async (req, res) => {
