@@ -68,13 +68,13 @@ getTwilioBillings(705092).then((charge) =>
 );
 
 // charge the newsletter with id passed in args
-chargeAccount(705092, 2100)
-  .then((res) => {
-    console.log(res);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+// chargeAccount(705092, 2100)
+//   .then((res) => {
+//     console.log(res);
+//   })
+//   .catch((err) => {
+//     console.log(err);
+//   });
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);
