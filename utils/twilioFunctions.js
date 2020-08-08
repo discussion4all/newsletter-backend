@@ -14,6 +14,16 @@ const createSubAccount = async (name) => {
   };
 };
 
+const createMessageService = async (sid, authToken, name) => {
+  const subAccountClient = require("twilio")(sid, authToken);
+
+  const msgService = await subAccountClient.messaging.services.create({
+    friendlyName: name,
+  });
+
+  return msgService.sid;
+};
+
 const getTwilioBillings = async (newsletterId) => {
   const newsletter = await Newsletter.findOne({
     newsletterId,
@@ -52,6 +62,7 @@ const fetchAllPhoneNumbers = () => {
 
 module.exports = {
   createSubAccount,
+  createMessageService,
   getTwilioBillings,
   fetchAllPhoneNumbers,
 };
