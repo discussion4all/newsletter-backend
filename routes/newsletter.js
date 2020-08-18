@@ -31,13 +31,14 @@ router.post("/create", async (req, res) => {
         subAccountAuthToken,
         title
       );
-      console.log({ subAccountSid, subAccountAuthToken, msgSid });
-
+      // console.log({ subAccountSid, subAccountAuthToken, msgSid });
+      console.log("msgSid", msgSid)
       let msgServiceSid;
-      if (newsletters.length >= 2) {
+      if (newsletters.length >= 1) {
         msgServiceSid =
           newsletters[newsletters.length - 1].twilio.msg_service_sid;
       } else {
+        console.log("create a service")
         msgServiceSid = await createMsgService(title);
       }
 

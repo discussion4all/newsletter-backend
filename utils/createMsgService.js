@@ -12,7 +12,7 @@ const createMsgService = async (name) => {
   // console.log("service", service);
   await client.messaging
     .services(service.sid)
-    .phoneNumbers.create({ phoneNumberSid: process.env.PHONE_NUMBER_SID_2 })
+    .phoneNumbers.create({ phoneNumberSid: process.env.PHONE_NUMBER_SID_1 })
     .then((phoneNumber) => phoneNumber);
   return service.sid;
 };
