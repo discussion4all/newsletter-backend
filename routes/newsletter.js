@@ -39,7 +39,11 @@ router.post("/create", async (req, res) => {
           newsletters[newsletters.length - 1].twilio.msg_service_sid;
       } else {
         console.log("create a service")
-        msgServiceSid = await createMsgService(title);
+        try {
+		msgServiceSid = await createMsgService(title);
+	} catch (msgServiceErr) {
+		console.warn('Failed to create messaging service', msgServiceErr);
+	}
       }
 
       const newNewsletter = new Newsletter({
